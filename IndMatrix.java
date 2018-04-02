@@ -27,140 +27,168 @@ public class IndMatrix <T extends Object> implements FriendshipGraph<T>
     
     public void addVertex(T vertLabel) {
         // Implement me!
-        vert.add(vertLabel);
+        if(vert.indexOf(vertLabel) < 0) { // add when vertLabel doesn't exist
+            vert.add(vertLabel);
+        }
     } // end of addVertex()
 	
     
     public void addEdge(T srcLabel, T tarLabel) {
-        // Implement me!    
-        matrixRow = new ArrayList<Integer>(); // creating a new row
-        for(int i = 0; i < vert.size(); i++) {      
-            if(vert.get(i).equals(srcLabel) || vert.get(i).equals(tarLabel)) { 
-                matrixRow.add(1);
+        // Implement me!     
+        if(vert.indexOf(srcLabel) >= 0 && vert.indexOf(tarLabel) >= 0) {
+            matrixRow = new ArrayList<Integer>(); // creating a new row
+            for(int i = 0; i < vert.size(); i++) {
+                if(vert.get(i).equals(srcLabel) || vert.get(i).equals(tarLabel)) {
+                    matrixRow.add(1);
+                }
+                else {
+                    matrixRow.add(0);
+                }
             }
-            else {
-                matrixRow.add(0);
-            }
-        }   
-        matrixCol.add(matrixRow);
+            matrixCol.add(matrixRow);
+        } else {
+            System.out.println("One or both incident vertices does not exist.");
+        }
     } // end of addEdge()
 	
 
     public ArrayList<T> neighbours(T vertLabel) {
         ArrayList<T> neighbours = new ArrayList<T>();      
         // Implement me!
-        int temp = 0; int count = 0;
-        
-        for(int i = 0; i < vert.size(); i++) { // find where vertLabel is located in vert
-            if(vert.get(i).equals(vertLabel)) {
-                temp = i;
-                break;
-            }
-        }
-        
-        for(int j = 0; j < matrixCol.size(); j++) {
-            if(temp < matrixCol.get(j).size()) {
-                if(matrixCol.get(j).get(temp) == 1) { // find if row with vertLabel
-                    for(int jj = 0; jj < matrixCol.get(j).size(); jj++) {
-                        if(matrixCol.get(j).get(jj) == 1 && jj != temp) { // find which vertex it's connected
-                            neighbours.add(vert.get(jj)); // add to array
+        int count = 0;  
+        if(vert.indexOf(vertLabel) >= 0) {
+            for(int j = 0; j < matrixCol.size(); j++) {
+                if(vert.indexOf(vertLabel) < matrixCol.get(j).size()) {
+                    if(matrixCol.get(j).get(vert.indexOf(vertLabel)) == 1) { // find if row with vertLabel
+                        for(int jj = 0; jj < matrixCol.get(j).size(); jj++) {
+                            if(matrixCol.get(j).get(jj) == 1 && jj != vert.indexOf(vertLabel)) { // find which vertex it's connected
+                                neighbours.add(vert.get(jj)); // add to array
+                            }
                         }
                     }
                 }
             }
-            else {
-                continue;
-            }
         }
-        
+        else {
+            System.out.println("Vertex does not exist.");
+        }
         return neighbours;
     } // end of neighbours()
     
     
     public void removeVertex(T vertLabel) {
         // Implement me!
-        int temp = 0;
-        for(int i = 0; i < vert.size(); i++) { // to find the position of deleted value
-            if(vert.get(i).equals(vertLabel)) {    
-                temp = i;
-                vert.remove(vertLabel);
+        int position = vert.indexOf(vertLabel);
+        if(position >= 0) {
+            for(int i = 0; i < matrixCol.size(); i++) {
+                if(matrixCol.get(i).get(position) == 1) { // find if current row has deleted value
+                    matrixCol.remove(i); // remove row
+                }
+                else {
+                    matrixCol.get(i).remove(position); // delete column from now
+                }
             }
         }
-        
-        for(int j = 0; j < matrixCol.size(); j++) { // loop through to each row
-            if(matrixCol.get(j).get(temp) == 1) { // find if current row has deleted value
-                matrixCol.remove(j); // remove row
-            }
-            else {
-                matrixCol.get(j).remove(temp); // delete column from row
-            }
+        else {
+            System.out.println("Vertex does not exist.");
         }
         
     } // end of removeVertex()
 	
     
     public void removeEdge(T srcLabel, T tarLabel) {
-        // Implement me!
-        int srcCount = 0;
-        int tarCount = 0;
-        int count = 0;
-        for(T object : vert) {
-            if(object.equals(srcLabel)) {
-                srcCount = count;
+        // Implement me!        
+        int src_position = vert.indexOf(srcLabel);
+        int tar_position = vert.indexOf(tarLabel);
+      
+        if(src_position >= 0 && tar_position >= 0) {
+            for(int i = 0; i < matrixCol.size(); i++) {
+                if(matrixCol.get(i).get(src_position) == 1 && matrixCol.get(i).get(tar_position) == 1) {
+                    matrixCol.remove(i);
+                }
             }
-            else if(object.equals(tarLabel)) {
-                tarCount = count;
-            }
-            if(srcCount != 0 && tarCount != 0) { break; } // don't need to go through every value
-            count++;
+        } else {
+            System.out.println("One or both incident vertices does not exist.");
         }
-        
-        for(int i = 0; i < matrixCol.size(); i++) { // loop through rows to delete certain column
-            if(matrixCol.get(i).get(srcCount) == 1 && matrixCol.get(i).get(tarCount) == 1) {
-                matrixCol.remove(i);
-                break;
-            }
-        }
-        
-        
-        
+       
+         
     } // end of removeEdges()
 	
     
     public void printVertices(PrintWriter os) {
         // Implement me!
-        for(T object : vert) {
-            String vertex = (String)object;
-            System.out.printf("%s ", vertex);
-            os.print(vertex + " ");
+        for(int i = 0; i < vert.size(); i++) {
+            os.print(vert.get(i) + " ");
         }
-        System.out.println();
+        os.println();
+        os.flush();
     } // end of printVertices()
 	
     
     public void printEdges(PrintWriter os) {
-
         int count = 0;
         for(int i = 0; i < matrixCol.size(); i++) {
             for(int j = 0; j < matrixCol.get(i).size(); j++) {
                 if(matrixCol.get(i).get(j) == 1) {
                     count++;
-                    String value = (String)vert.get(j);
-                    System.out.printf("%s ", value);
-                    if(count == 2) { break; }
+                    os.print(vert.get(j) + " ");
+                    if(count == 2) { 
+                        os.println(); 
+                        break; 
+                    }
                 }
             }
             count = 0;
-            System.out.println();
         }
+        os.flush();
     } // end of printEdges()
     
     
     public int shortestPathDistance(T vertLabel1, T vertLabel2) {
     	// Implement me!
-    	
-        // if we reach this point, source and target are disconnected
-        return disconnectedDist;    	
+        Queue<T> queue = new LinkedList<T>();
+        HashMap<T,T> connect = new HashMap<T,T>();
+        int[] visited = new int[vert.size()];
+        int distance = 0;
+    	int begin = vert.indexOf(vertLabel1);
+        int end = vert.indexOf(vertLabel2);
+        T currVert;
+        T endVer = vertLabel2;
+        
+        if(begin >= 0 && end >= 0) {
+            Arrays.fill(visited, 0); // set all value to 0
+            visited[begin] = 1;
+            queue.add(vertLabel1);
+            while(!queue.isEmpty()) {
+                currVert = queue.remove();
+                int v = vert.indexOf(currVert);
+                for(int i = 0; i < matrixCol.size(); i++) {
+                    if(matrixCol.get(i).size() > v) {
+                        if(matrixCol.get(i).get(v) == 1) {
+                            for(int j = 0; j < matrixCol.get(i).size(); j++) {
+                                if((matrixCol.get(i).get(j) == 1) && (j != v) && (visited[j] == 0)) {
+                                    queue.add(vert.get(j));
+                                    connect.put(vert.get(j), currVert);
+                                    visited[j] = 1;
+                                }
+                            }
+                        }
+                    } else { continue; }
+                }
+            }  
+            if(connect.get(vertLabel2) == null) {
+                return disconnectedDist;  
+            } else {
+                while(endVer != null) {
+                    distance++;
+                    endVer = connect.get(endVer);
+                }
+            }
+        } else {
+            System.out.println("One or both incident vertices does not exist.");
+        }
+        
+        return distance - 1;
     } // end of shortestPathDistance()
     
 } // end of class IndMatrix
