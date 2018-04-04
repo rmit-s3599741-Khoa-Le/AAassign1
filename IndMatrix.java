@@ -83,11 +83,16 @@ public class IndMatrix <T extends Object> implements FriendshipGraph<T>
             for(int i = 0; i < matrixCol.size(); i++) {
                 if(matrixCol.get(i).get(position) == 1) { // find if current row has deleted value
                     matrixCol.remove(i); // remove row
+                    i = i - 1;
+                } else {
+                    matrixCol.get(i).remove(position);
                 }
-                else {
-                    matrixCol.get(i).remove(position); // delete column from now
-                }
+                
             }
+            System.out.println();
+            vert.remove(position);
+            
+            
         }
         else {
             System.out.println("Vertex does not exist.");
@@ -185,10 +190,10 @@ public class IndMatrix <T extends Object> implements FriendshipGraph<T>
                 }
             }
         } else {
-            System.out.println("One or both incident vertices does not exist.");
+            System.err.println("One or both incident vertices does not exist.");        
         }
         
-        return distance - 1;
+       return distance - 1; 
     } // end of shortestPathDistance()
     
 } // end of class IndMatrix
