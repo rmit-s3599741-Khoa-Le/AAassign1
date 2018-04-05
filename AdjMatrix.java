@@ -36,12 +36,18 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
         // Implement me!
 
     	matrixRow = new ArrayList<Integer>();
-    	matrixRow.add(notConn);
+		vertices.add(vertLabel);
 
+    	for (int i = 0; i<vertices.size();i++) {
+    		matrixRow.add(notConn);
+    	}
     	matrixCol.add(matrixRow);
 
-        vertices.add(vertLabel);
+        int newVert = vertices.indexOf(vertLabel);
 
+        for (int i = 0; i<vertices.size()-1;i++) {
+        	matrixCol.get(i).add(newVert, notConn);
+        }
 
     } // end of addVertex()
 	
@@ -55,13 +61,13 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
         matrixCol.get(vert2).set(vert1, conn);
         matrixCol.get(vert1).set(vert2, conn);
 
-        for (int i=0;i<matrixCol.get(0).size();i++) {
-            for(int j=0;j<matrixCol.get(0).size();j++) {
-                if (matrixCol.get(i).get(j) != conn) {
-                    matrixCol.get(i).set(j, notConn);
-                }
-            }
-        }
+        // for (int i=0;i<matrixCol.get(0).size();i++) {
+        //     for(int j=0;j<matrixCol.get(0).size();j++) {
+        //         if (matrixCol.get(i).get(j) != conn) {
+        //             matrixCol.get(i).set(j, notConn);
+        //         }
+        //     }
+        // }
 
     } // end of addEdge()
 	
@@ -107,9 +113,11 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
     public void printVertices(PrintWriter os) {
 //         // Implement me!
 
-        for (int i=1;i<vertices.size();i++) {
-            os.print(vertices.get(i));
+        for (int i=0;i<vertices.size();i++) {
+            os.print(vertices.get(i)+" ");
         }   
+    	os.println();
+        os.flush();
 
     } // end of printVertices()
 	
@@ -118,13 +126,14 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 //         // Implement me!
 
     	for (int i=0;i<vertices.size();i++) {
-    		for (int j=1;j<vertices.size();j++) {
+    		for (int j=0;j<vertices.size();j++) {
     			if (matrixCol.get(i).get(j) == conn) {
     				os.print(vertices.get(i));
                     os.println(vertices.get(j));
     			}
     		}
     	}
+    	os.flush();
 
     } // end of printEdges()
     
