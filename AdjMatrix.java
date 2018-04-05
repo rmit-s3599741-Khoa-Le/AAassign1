@@ -92,6 +92,10 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 
         int vert = vertices.indexOf(vertLabel);
 
+        for (int i =0;i<vertices.size();i++) {
+        	matrixCol.get(i).remove(vert);
+        }
+
         vertices.remove(vert);
         matrixCol.remove(vert);
 
